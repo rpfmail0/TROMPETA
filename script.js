@@ -64,9 +64,18 @@ startAudioButton.addEventListener('click', async () => {
     stopAudioButton.disabled = false;
 
     try {
+        // Asegurarse de que el contexto de audio está iniciado/reanudado
+        if (!audioContext) {
+             audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioContext.state === 'suspended') {
+            await audioContext.resume();
+            console.log('AudioContext reanudado');
+        }
+
+
         // Solicitar acceso al micrófono
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
         microphone = audioContext.createMediaStreamSource(stream);
         analyser = audioContext.createAnalyser();
 
