@@ -1,3 +1,4 @@
+document.addEventListener('DOMContentLoaded', () => {
 // Referencias a elementos del DOM
 const startAudioButton = document.getElementById('start-audio');
 const stopAudioButton = document.getElementById('stop-audio');
@@ -15,11 +16,11 @@ let microphone = null;
 let meydaAnalyzer = null;
 
 // Variables para VexFlow
-const { Renderer, Stave, Formatter, System } = VexFlow;
-const renderer = new Renderer(scoreCanvas, Renderer.Backends.CANVAS);
-const context = renderer.getContext();
+let renderer = null;
+let context = null;
 let stave = null;
 let notes = []; // Array para almacenar las notas detectadas o cargadas
+const { Formatter } = VexFlow; // Formatter se puede declarar aquí si es globalmente accesible
 
 // Variables para MIDI
 let currentMidi = null;
@@ -27,6 +28,11 @@ let pianoSampler = null;
 
 // Configuración inicial de VexFlow
 function setupScore() {
+    // Inicializar VexFlow aquí para asegurar que la biblioteca esté cargada
+    const { Renderer, Stave, System } = VexFlow; // Obtener Renderer, Stave, System dentro de la función
+    renderer = new Renderer(scoreCanvas, Renderer.Backends.CANVAS);
+    context = renderer.getContext();
+
     renderer.resize(800, 300); // Tamaño inicial del canvas
     context.clearRect(0, 0, 800, 300); // Limpiar canvas
     stave = new Stave(10, 40, 780); // Posición y ancho del pentagrama
@@ -283,7 +289,7 @@ exportMidiButton.addEventListener('click', () => {
 });
 
 // Inicializar el pentagrama al cargar la página
-window.onload = setupScore;
+// window.onload = setupScore; // Reemplazado por DOMContentLoaded
 
 // Función placeholder para la detección de tono (será llamada por Meyda)
 function handleDetectedPitch(pitch) {
@@ -329,3 +335,8 @@ function processMidiNotes(midiNotes) {
     console.log('Notas MIDI procesadas:', midiNotes);
     exportPdfButton.disabled = false; // Permitir exportar el pentagrama cargado
 }
+
+// Inicializar el pentagrama después de que el DOM esté completamente cargado
+setupScore();
+
+}); // Cierre del listener DOMContentLoaded
